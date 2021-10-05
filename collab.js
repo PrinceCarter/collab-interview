@@ -1,5 +1,6 @@
 const fs = require("fs");
 const csv = require("csvtojson");
+const { fail } = require("assert");
 const files = ["file1.csv", "file2.csv"];
 
 // List of files and their Accounts to be compared
@@ -14,6 +15,31 @@ var discrepancies = [];
   Leave as "" to get all discrepancies 
 */
 var concern = ""; 
+
+/* 
+  This program runs under the assumption 
+  that all of the files has the same number of lines 
+*/
+
+
+// Enforcing the rule: if 2 distinct files are not provided, it should raise error
+function checkDistinctFiles(){
+  if (files.length < 2)
+    return false;
+  return new Set(files).size === files.length;
+}
+
+
+/* 
+  If we recieve no errors in our input, process files and get discrepancies
+  Otherwise, show error message and terminate the program 
+*/
+if (checkDistinctFiles()){
+  processFiles();
+} else {
+  console.log("There was an input error. Please check your input files and try again.");
+  return;
+}
 
 // Account class to store csv lines
 class Account {
@@ -104,16 +130,6 @@ function findErrors(arrayOfFiles, userConcern) {
           discrepancies.push(accountToCompare.email);
         }
       }
-      /* 
-        If this file length is greater than the minimum file length,
-        I would assume that we add the rest of the emails in the greater file
-        Since we would be comparing an Account to a null Account 
-      */
-      if (arrayOfFiles[j].length > min) {
-        for (var k = arrayOfFiles[j].length - min; k < arrayOfFiles[j].length;k++) {
-          discrepancies.push(arrayOfFiles[j][k].email);
-        }
-      }
     }
   } else if (userConcern == "channel_ownership") {
     for (i = 0; i < min; i++) {
@@ -135,6 +151,7 @@ function findErrors(arrayOfFiles, userConcern) {
     for (i = 0; i < min; i++) {
       // To make things simple, we just compare all files to the first file
       accountToCompare = arrayOfFiles[0][i];
+      var isLarger = false;
       for (j = 1; j < arrayOfFiles.length; j++) {
         account = arrayOfFiles[j][i];
         if (
@@ -144,15 +161,12 @@ function findErrors(arrayOfFiles, userConcern) {
         ) {
           discrepancies.push(accountToCompare.email);
         }
-      }
-      if (arrayOfFiles[j].length > min) {
-        for (var k = arrayOfFiles[j].length - min; k < arrayOfFiles[j].length; k++) {
-          discrepancies.push(arrayOfFiles[j][k].email);
-        }
+        if (arrayOfFiles[j].length > min)
+          isLarger = true;
       }
     }
   }
   console.log(discrepancies);
 }
 
-processFiles();
+
