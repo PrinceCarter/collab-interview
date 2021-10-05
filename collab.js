@@ -140,18 +140,12 @@ function findErrors(arrayOfFiles, userConcern) {
         if (accountToCompare.channel_id != account.channel_id) {
           discrepancies.push(accountToCompare.email);
         }
-        if (arrayOfFiles[j].length > min) {
-          for (var k = arrayOfFiles[j].length - min; k < arrayOfFiles[j].length;k++) {
-            discrepancies.push(arrayOfFiles[j][k].email);
-          }
-        }
       }
     }
   } else {
     for (i = 0; i < min; i++) {
       // To make things simple, we just compare all files to the first file
       accountToCompare = arrayOfFiles[0][i];
-      var isLarger = false;
       for (j = 1; j < arrayOfFiles.length; j++) {
         account = arrayOfFiles[j][i];
         if (
@@ -161,8 +155,6 @@ function findErrors(arrayOfFiles, userConcern) {
         ) {
           discrepancies.push(accountToCompare.email);
         }
-        if (arrayOfFiles[j].length > min)
-          isLarger = true;
       }
     }
   }
