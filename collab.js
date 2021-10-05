@@ -22,13 +22,25 @@ var concern = "";
 */
 
 
-// Enforcing the rule: if 2 distinct files are not provided, it should raise error
-function checkDistinctFiles(){
-  if (files.length < 2)
-    return false;
-  return new Set(files).size === files.length;
+// Account class to store csv lines
+class Account {
+  constructor(email, channel, sub_count) {
+    this.email = email;
+    this.channel_id = channel;
+    this.sub_count = sub_count;
+  }
 }
 
+/* 
+  Since reading csv is asynchronous, we constantly check if we've processed
+  all of the files so we can continue with finding errors. 
+*/
+var timeout = setInterval(function () {
+  if (checkIfFinished()) {
+    clearInterval(timeout);
+    findErrors(fileList, concern);
+  }
+}, 100);
 
 /* 
   If we recieve no errors in our input, process files and get discrepancies
@@ -41,13 +53,11 @@ if (checkDistinctFiles()){
   return;
 }
 
-// Account class to store csv lines
-class Account {
-  constructor(email, channel, sub_count) {
-    this.email = email;
-    this.channel_id = channel;
-    this.sub_count = sub_count;
-  }
+// Enforcing the rule: if 2 distinct files are not provided, it should raise error
+function checkDistinctFiles(){
+  if (files.length < 2)
+    return false;
+  return new Set(files).size === files.length;
 }
 
 // Read data from the csv files and store them as an array of Account objects
@@ -92,17 +102,6 @@ function formatSubCount(subs) {
   subs = subs.replace(",", "");
   return parseInt(subs);
 }
-
-/* 
-  Since reading csv is asynchronous, we constantly check if we've processed
-  all of the files so we can continue with finding errors. 
-*/
-var timeout = setInterval(function () {
-  if (checkIfFinished()) {
-    clearInterval(timeout);
-    findErrors(fileList, concern);
-  }
-}, 100);
 
 // Files are finished processing once our filelist length equals our input files array length
 function checkIfFinished() {
