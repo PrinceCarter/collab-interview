@@ -7,7 +7,7 @@ const files = ["file1.csv", "file2.csv"];
 var fileList = [];
 
 // List of emails with discrepancies
-var discrepancies = [];
+var discrepancies = new Set();
 
 /* 
   Optional concern (Fill in with concern (subscriber_count or channel_ownership) 
@@ -126,7 +126,7 @@ function findErrors(arrayOfFiles, userConcern) {
       for (var j = 1; j < arrayOfFiles.length; j++) {
         account = arrayOfFiles[j][i];
         if (accountToCompare.sub_count != account.sub_count) {
-          discrepancies.push(accountToCompare.email);
+          discrepancies.add(accountToCompare.email);
         }
       }
     }
@@ -137,7 +137,7 @@ function findErrors(arrayOfFiles, userConcern) {
       for (j = 1; j < arrayOfFiles.length; j++) {
         account = arrayOfFiles[j][i];
         if (accountToCompare.channel_id != account.channel_id) {
-          discrepancies.push(accountToCompare.email);
+          discrepancies.add(accountToCompare.email);
         }
       }
     }
@@ -152,7 +152,7 @@ function findErrors(arrayOfFiles, userConcern) {
           accountToCompare.channel_id != account.channel_id ||
           accountToCompare.sub_count != account.sub_count
         ) {
-          discrepancies.push(accountToCompare.email);
+          discrepancies.add(accountToCompare.email);
         }
       }
     }
