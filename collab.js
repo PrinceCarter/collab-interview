@@ -157,7 +157,7 @@ function findErrors(arrayOfFiles, userConcern) {
       }
     }
   }
-  console.log(discrepancies);
+  console.log(new Array(...discrepancies).join('\r\n'));
 }
 
 
